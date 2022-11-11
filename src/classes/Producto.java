@@ -27,6 +27,11 @@ public class Producto {
   public int GetCantidadEnStock() { return CantidadEnStock; }
   public int GetStockMinimo() { return StockMinimo; }
 
+  public int DisminuirStock(int cantidad) {
+    CantidadEnStock -= cantidad;
+    return CantidadEnStock;
+  }
+
   // 1A, modificar producto
   public void ModificarProducto(String codigo, String descripcion, float precioUnitario, int cantidadEnStock, int stockMinimo) {
     Codigo = codigo;

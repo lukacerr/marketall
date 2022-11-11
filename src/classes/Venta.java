@@ -4,34 +4,46 @@ import java.util.*;
 
 public class Venta {
   class ProductoYCantidad {
-    Producto Producto;
-    int Cantidad;
+    private Producto Producto;
+    private int Cantidad;
 
     public ProductoYCantidad(Producto producto, int cantidad) {
       Producto = producto;
       Cantidad = cantidad;
     }
 
-    public float GetPrecioTotal() { return Producto.GetPrecioUnitario() * Cantidad; };
+    public Producto GetProducto() { return Producto; }
+    public int GetCantidad() { return Cantidad; }
+    public float GetPrecioTotal() { return Producto.GetPrecioUnitario() * Cantidad; }
+
+    public Boolean AumentarCantidad() { return SumarEnCantidad(1); }
+    public Boolean DisminuirCantidad() { return SumarEnCantidad(-1); }
+    public Boolean SumarEnCantidad(int cantidad) {
+      Cantidad += cantidad;
+      return HayStockSuficiente(); 
+    }
 
     public Boolean HayStockSuficiente() {
       // ! ¿Con el stock mínimo o la cantidad? no especifíca
       // return Producto.GetStockMinimo() >= Cantidad;
       return Producto.GetCantidadEnStock() >= Cantidad;
     }
+
+    public int RegistrarVenta() {
+      return Producto.DisminuirStock(Cantidad);
+    }
   }
 
   private List<ProductoYCantidad> ProductosYCantidades;
-  private Boolean ventaRegistrada;
+  private Boolean VentaRegistrada;
 
   public Venta() {
     ProductosYCantidades = new ArrayList<ProductoYCantidad>();
-    ventaRegistrada = false;
+    VentaRegistrada = false;
   }
 
-  public boolean GetVentaRegistrada() {
-    return ventaRegistrada;
-  }
+  public ProductoYCantidad[] GetProductoYCantidades() { return ProductosYCantidades.toArray(new ProductoYCantidad[ProductosYCantidades.size()]); }
+  public boolean GetVentaRegistrada() { return VentaRegistrada; }
   
   public float GetPrecioTotal(MediosDePago medioDePago) {
     float valorTotal = 0;
@@ -61,14 +73,29 @@ public class Venta {
     return ProductosYCantidades.stream().allMatch(pyc -> pyc.HayStockSuficiente());
   }
 
-  // TODO:
   // 2, registrar venta
   // 2C, disminuir stock al registrar venta / confirmar compra
-  public void RegistrarVenta(float precioTotal) {
+  public int RegistrarVenta() {
+    int v = 0;
+    VentaRegistrada = true;
+    for (ProductoYCantidad productoYCantidad : ProductosYCantidades) {
+      v += productoYCantidad.RegistrarVenta();
+    }
+
+    return v;
   }
 
-  // registrar venta sin cálculo de pago previo
-  public void RegistrarVenta(MediosDePago medioDePago) {
-    RegistrarVenta(GetPrecioTotal(medioDePago));
+  public ProductoYCantidad AgregarProducto(Producto producto) {
+    return AgregarProducto(producto, 1);
+  }
+
+  public ProductoYCantidad AgregarProducto(Producto producto, int cantidad) {
+    ProductoYCantidad v = new ProductoYCantidad(producto, cantidad);
+    ProductosYCantidades.add(v);
+    return v;
+  }
+
+  public Boolean BajarProducto(ProductoYCantidad productoYCantidad) {
+    return ProductosYCantidades.remove(productoYCantidad);
   }
 }

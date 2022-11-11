@@ -18,9 +18,11 @@ public class CatalogoDeProductos {
     return Productos.stream().filter(p -> p.GetId() == Id).findFirst().orElse(null);
   }
 
-  // 1A, cargar producto
-  public Boolean CargarProducto(Producto producto) {
-    return Productos.add(producto);
+  // 1A, crear y cargar producto
+  public Producto CargarProducto(String codigo, String descripcion, float precioUnitario, int cantidadEnStock, int stockMinimo) {
+    Producto v = new Producto(codigo, descripcion, precioUnitario, cantidadEnStock, stockMinimo);
+    Productos.add(v);
+    return v;
   }
 
   // 1A, bajar producto
